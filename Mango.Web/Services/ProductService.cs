@@ -17,7 +17,7 @@ namespace Mango.Web.Services
             return await this.SendAsync<T>(new ApiRequest() { 
                 ApiType = ApiHelper.ApiType.POST ,
                 Data = productDto,
-                Url = ApiHelper.MangoApiBase + "api/products",
+                Url = ApiHelper.ProductApiBase + "api/products",
                 AccessToken = token
             });
         }
@@ -27,7 +27,7 @@ namespace Mango.Web.Services
             return await this.SendAsync<T>(new ApiRequest()
             {
                 ApiType = ApiHelper.ApiType.DELETE,
-                Url = ApiHelper.MangoApiBase + "api/products/" + productId,
+                Url = ApiHelper.ProductApiBase + "api/products/" + productId,
                 AccessToken = token
             });
         }
@@ -37,7 +37,7 @@ namespace Mango.Web.Services
             return await this.SendAsync<T>(new ApiRequest()
             {
                 ApiType = ApiHelper.ApiType.GET,
-                Url = ApiHelper.MangoApiBase + "api/products/" + productId,
+                Url = ApiHelper.ProductApiBase + "api/products/" + productId,
                 AccessToken = token
             });
         }
@@ -47,7 +47,7 @@ namespace Mango.Web.Services
             return await this.SendAsync<T>(new ApiRequest()
             {
                 ApiType = ApiHelper.ApiType.GET,
-                Url = ApiHelper.MangoApiBase + "api/products",
+                Url = ApiHelper.ProductApiBase + "api/products",
                 AccessToken = token
             });
         }
@@ -58,7 +58,7 @@ namespace Mango.Web.Services
             {
                 ApiType = ApiHelper.ApiType.PUT,
                 Data = productDto,
-                Url = ApiHelper.MangoApiBase + "api/products",
+                Url = ApiHelper.ProductApiBase + "api/products",
                 AccessToken = token
             });
         }

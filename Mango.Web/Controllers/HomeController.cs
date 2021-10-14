@@ -12,11 +12,13 @@ namespace Mango.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductService _productService;
+        private readonly ICartService _cartService;
 
-        public HomeController(ILogger<HomeController> logger, IProductService productService)
+        public HomeController(ILogger<HomeController> logger, IProductService productService, ICartService cartService)
         {
             _logger = logger;
             _productService = productService;
+            _cartService = cartService;
         }
 
         public async Task<IActionResult> Index()
@@ -41,6 +43,42 @@ namespace Mango.Web.Controllers
             }
 
             return View(product);
+        }
+
+        [HttpPost]
+        [ActionName("Details")]
+        [Authorize]
+        public async Task<IActionResult> DetailsPost(ProductDto productDto)
+        {
+            CartDto cartDto = new CartDto()
+            {
+                CartHeader = new CartHeaderDto
+                {
+                    UserId = User.Claims.Where(u => u.Type == "sub")?.FirstOrDefault()?.Value
+                }
+            };
+
+            CartDetailDto cartDetail = new CartDetailDto()
+            {
+                Count = productDto.Count,
+                ProductId = productDto.ProductId
+            };
+
+            var respProduct = await _productService.GetAllProductByIdAsync<ProductDto>(productDto.ProductId, "");
+            if (respProduct != null && respProduct.Success)
+                cartDetail.Product = respProduct.Result;
+
+            List<CartDetailDto> cartDetailsDto = new List<CartDetailDto>();
+            cartDetailsDto.Add(cartDetail);
+
+            cartDto.CartDetails = cartDetailsDto;
+
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var respAddToCart = await _cartService.AddToCartAsync<CartDto>(cartDto, accessToken);
+            if (respAddToCart != null && respAddToCart.Success)
+                return RedirectToAction(nameof(Index));
+
+            return View(productDto);
         }
 
         public IActionResult Privacy()

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Mango.Services.Shopping.Models;
 using Mango.Services.Shopping.Models.Dtos;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mango.Services.Shopping.Repository
 {
@@ -15,6 +15,15 @@ namespace Mango.Services.Shopping.Repository
             _context = context;
             _mapper = mapper;
         }
+
+        public async Task<bool> ApplyCoupon(string userId, string couponCode)
+        {
+            var cartDb = await _context.CartHeaders.FirstOrDefaultAsync(u => u.UserId == userId);
+            cartDb.CouponCode = couponCode;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> ClearCart(string userId)
         {
             var cartHeaderDb = await _context.CartHeaders.FirstOrDefaultAsync(c => c.UserId == userId);
@@ -43,6 +52,14 @@ namespace Mango.Services.Shopping.Repository
                 .Include(d => d.Product);
 
             return _mapper.Map<CartDto>(cart);
+        }
+
+        public async Task<bool> RemoveCoupon(string userId)
+        {
+            var cartDb = await _context.CartHeaders.FirstOrDefaultAsync(u => u.UserId == userId);
+            cartDb.CouponCode = "";
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> RemoveFromCart(int cartDetailId)
@@ -109,6 +126,7 @@ namespace Mango.Services.Shopping.Repository
                 }
                 else
                 {
+                    cart.CartDetails.FirstOrDefault().CartHeaderId = cartHeaderDb.CartHeaderId;
                     cart.CartDetails.FirstOrDefault().Product = null;
                     cart.CartDetails.FirstOrDefault().Count += cartDetailDb.Count;
                     _context.CartDetails.Update(cart.CartDetails.FirstOrDefault());

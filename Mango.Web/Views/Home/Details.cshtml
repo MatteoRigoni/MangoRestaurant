@@ -1,6 +1,8 @@
 ﻿@model Mango.Web.Models.Dtos.ProductDto
 
-<form>
+@if (Model != null)
+{
+<form asp-action="Details">
     <div class=" pt-4">
         <input asp-for="ProductId" hidden />
         <div class="card container" style="border:1px solid #808080;">
@@ -49,6 +51,7 @@
         </div>
     </div>
 </form>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial"/>

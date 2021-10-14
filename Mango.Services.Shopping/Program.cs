@@ -1,5 +1,8 @@
 using AutoMapper;
+using Mango.MessageBus;
 using Mango.Services.Shopping.Mappings;
+using Mango.Services.Shopping.Repository;
+using Mango.Services.Shopping.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRespository>();
+
+builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
 
 // Config AutoMapper
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
@@ -17,6 +23,12 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddControllers();
+
+builder.Services.AddHttpClient<ICouponRepository, CouponRespository>(u =>
+{
+    u.BaseAddress = new Uri(builder.Configuration["CouponApi"]);
+});
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Mango.Services.Services", Version = "v1" });

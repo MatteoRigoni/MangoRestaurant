@@ -2,7 +2,9 @@
 {
     public static class ApiHelper
     {
-        public static string MangoApiBase { get; set; }
+        public static string ProductApiBase { get; set; }
+        public static string ShoppingApiBase { get; set; }
+        public static string CouponApiBase { get; set; }
         public enum ApiType
         {
             GET,
